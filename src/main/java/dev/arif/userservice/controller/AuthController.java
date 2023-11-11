@@ -34,6 +34,9 @@ public class AuthController {
     @PostMapping("/signup")
     public ResponseEntity<UserDto> signUp(@RequestBody SignUpRequestDto request) {
         UserDto userDto = authService.signUp(request.getEmail(), request.getPassword());
+        if(userDto == null){
+            return new ResponseEntity<>(userDto, HttpStatus.BAD_REQUEST);
+        }
         return new ResponseEntity<>(userDto, HttpStatus.OK);
     }
 
