@@ -10,7 +10,7 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 public class SpringSecurity {
 
-    @Bean
+   /* @Bean
     @Order(1)
     public SecurityFilterChain filteringCriteria(HttpSecurity http) throws Exception {
         http.cors().disable();
@@ -19,7 +19,7 @@ public class SpringSecurity {
 //        http.authorizeHttpRequests(authorize -> authorize.anyRequest().permitAll());
 //        http.authorizeHttpRequests(authorize -> authorize.requestMatchers("/auth/*").authenticated());
         return http.build();
-    }
+    }*/
     // Object that handles what all api endpoints should be authenticated
     // v/s what all shouldn't be authenticated
 

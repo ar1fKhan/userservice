@@ -1,9 +1,7 @@
 package dev.arif.userservice.controller;
 
-import dev.arif.userservice.dtos.LoginRequestDto;
-import dev.arif.userservice.dtos.LogoutRequestDto;
-import dev.arif.userservice.dtos.SignUpRequestDto;
-import dev.arif.userservice.dtos.UserDto;
+import dev.arif.userservice.dtos.*;
+import dev.arif.userservice.models.SessionStatus;
 import dev.arif.userservice.service.AuthService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,12 +17,14 @@ public class AuthController {
     }
 
 
-    @PostMapping("/login")
+  /*  @PostMapping("/login")
     public ResponseEntity<UserDto> login(@RequestBody LoginRequestDto request) {
         return authService.login(request.getEmail(), request.getPassword());
+}
+*/
 
+    //login happenign via spring security
 
-    }
 
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(@RequestBody LogoutRequestDto request) {
@@ -45,5 +45,11 @@ public class AuthController {
         UserDto userDto = authService.signUp(request.getEmail(), request.getPassword());
         return "hello";
    }*/
+
+    @PostMapping("/validate")
+    public ResponseEntity<SessionStatus> validateToken(ValidateTokenRequestDto request) {
+        SessionStatus sessionStatus = authService.validate(request.getToken(), request.getUserId());
+        return new ResponseEntity<>(sessionStatus, HttpStatus.OK);
+    }
 
 }

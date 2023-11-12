@@ -1,11 +1,15 @@
 package dev.arif.userservice.service;
 
 import dev.arif.userservice.dtos.UserDto;
+import dev.arif.userservice.models.Role;
 import dev.arif.userservice.models.Session;
 import dev.arif.userservice.models.SessionStatus;
 import dev.arif.userservice.models.User;
 import dev.arif.userservice.repository.SessionRepository;
 import dev.arif.userservice.repository.UserRepository;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.MacAlgorithm;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -17,10 +21,7 @@ import org.springframework.util.MultiValueMapAdapter;
 
 import javax.crypto.SecretKey;
 import java.time.LocalDate;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class AuthService {
@@ -114,6 +115,33 @@ public class AuthService {
         User savedUser = userRepository.save(user);
 
         return UserDto.from(savedUser);
+    }
+    public SessionStatus validate(String token, Long userId) {
+        Optional<Session> sessionOptional = sessionRepository.findByTokenAndUser_Id(token, userId);
+
+        if (sessionOptional.isEmpty()) {
+            return SessionStatus.ENDED;
+        }
+
+        Session session = sessionOptional.get();
+
+        if (session.getSessionStatus() == SessionStatus.ENDED) {
+            return SessionStatus.ENDED;
+        }
+
+        Jws<Claims> claimsJws = Jwts.parser()
+                .build()
+                .parseSignedClaims(token);
+
+        String email = (String) claimsJws.getPayload().get("email");
+        List<Role> roles = (List<Role>) claimsJws.getPayload().get("roles");
+        Date createdAt = (Date) claimsJws.getPayload().get("createdAt");
+
+        if(createdAt.before(new Date())){
+            return SessionStatus.ENDED;
+        }
+
+        return SessionStatus.ACTIVE;
     }
 
 
